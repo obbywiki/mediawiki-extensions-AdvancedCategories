@@ -327,6 +327,7 @@ class CargoLookup {
 	}
 
 	/**
+	 * @param string $table
 	 * @param list<string> $keys
 	 * @param list<int> $ids
 	 * @param array<string, array{list: bool, delimiter: string}> $meta
@@ -380,6 +381,7 @@ class CargoLookup {
 	}
 
 	/**
+	 * @param mixed $raw
 	 * @param array{list: bool, delimiter: string} $meta
 	 * @return string|list<string>|null
 	 */

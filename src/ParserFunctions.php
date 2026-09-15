@@ -46,6 +46,7 @@ class ParserFunctions {
 	}
 
 	/**
+	 * @param Parser $parser
 	 * @param list<array{key: string, params: list<string>}> $warnings
 	 */
 	private static function emit_warnings( Parser $parser, array $warnings ): void {
