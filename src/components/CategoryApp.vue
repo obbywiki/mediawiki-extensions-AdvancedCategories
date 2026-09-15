@@ -2,7 +2,10 @@
 	<div class="advancedcategories-pages">
 		<AzIndex :letters="config.letters" />
 		<PagesPager :pagination="config.pagination" />
-		<PagesGrid :pages="config.pages" />
+		<PagesGrid
+			:pages="config.pages"
+			:columns="config.columns"
+		/>
 		<PagesPager :pagination="config.pagination" />
 	</div>
 </template>

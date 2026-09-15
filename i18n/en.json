@@ -16,5 +16,15 @@
 	"advancedcategories-pager-aria": "Category member pages",
 	"advancedcategories-pager-status": "$1-$2 of $3",
 	"advancedcategories-pager-status-total": "$1 pages",
-	"advancedcategories-pager-page": "Page $1"
+	"advancedcategories-pager-page": "Page $1",
+	"advancedcategories-tracking-category": "Pages using AdvancedCategories",
+	"advancedcategories-tracking-category-desc": "The page uses the #advancedcategories parser function.",
+	"advancedcategories-cargo-not-loaded": "Cargo is not installed; #advancedcategories cannot show table columns.",
+	"advancedcategories-cargo-missing-params": "#advancedcategories requires table= and fields=.",
+	"advancedcategories-cargo-invalid-table": "Invalid Cargo table name \"$1\".",
+	"advancedcategories-cargo-unknown-table": "Unknown Cargo table \"$1\".",
+	"advancedcategories-cargo-invalid-field": "Invalid Cargo field name \"$1\".",
+	"advancedcategories-cargo-unknown-field": "Unknown Cargo field \"$1\" in table \"$2\".",
+	"advancedcategories-cargo-no-fields": "#advancedcategories has no valid fields to display.",
+	"advancedcategories-cargo-too-many-fields": "#advancedcategories allows at most $1 fields; extra fields were ignored."
 }

@@ -16,5 +16,15 @@
 	"advancedcategories-pager-aria": "Accessible name for the category member pagination controls.",
 	"advancedcategories-pager-status": "Pagination status. $1 is the first item number on the current page, $2 is the last item number, and $3 is the total number of pages in the category.",
 	"advancedcategories-pager-status-total": "Pagination status when the current offset is not known. $1 is the total number of pages in the category.",
-	"advancedcategories-pager-page": "Accessible name for a numbered page button in the category member pager. $1 is the page number."
+	"advancedcategories-pager-page": "Accessible name for a numbered page button in the category member pager. $1 is the page number.",
+	"advancedcategories-tracking-category": "Name of the tracking category for pages that use #advancedcategories.",
+	"advancedcategories-tracking-category-desc": "Description of the tracking category on Special:TrackingCategories.",
+	"advancedcategories-cargo-not-loaded": "Parser warning when #advancedcategories is used and Cargo is not installed.",
+	"advancedcategories-cargo-missing-params": "Parser warning when #advancedcategories is missing table= or fields=.",
+	"advancedcategories-cargo-invalid-table": "Parser warning when the Cargo table name is not a valid identifier. $1 is the table name.",
+	"advancedcategories-cargo-unknown-table": "Parser warning when the named Cargo table does not exist. $1 is the table name.",
+	"advancedcategories-cargo-invalid-field": "Parser warning when a Cargo field name is not a valid identifier. $1 is the field name.",
+	"advancedcategories-cargo-unknown-field": "Parser warning when a Cargo field is not in the table schema. $1 is the field name, $2 is the table name.",
+	"advancedcategories-cargo-no-fields": "Parser warning when #advancedcategories has no remaining valid fields.",
+	"advancedcategories-cargo-too-many-fields": "Parser warning when more than the allowed number of Cargo fields are listed. $1 is the maximum."
 }

@@ -37,8 +37,17 @@
 
 	"Hooks": {
 		"BeforePageDisplay": "main",
-		"CategoryPageView": "main"
+		"CategoryPageView": "main",
+		"ParserFirstCallInit": "main"
 	},
+
+	"ExtensionMessagesFiles": {
+		"AdvancedCategoriesMagic": "AdvancedCategories.i18n.magic.php"
+	},
+
+	"TrackingCategories": [
+		"advancedcategories-tracking-category"
+	],
 
 	"ServiceWiringFiles": [
 		"src/ServiceWiring.php"

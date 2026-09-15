@@ -158,7 +158,8 @@
 }
 
 #advancedcategories-pages-app .advancedcategories-row td {
-	height: calc( var( --space-unit ) * 4.5 );
+	height: auto;
+	min-height: calc( var( --space-unit ) * 4.5 );
 	padding-top: var( --space-xs );
 	padding-bottom: var( --space-xs );
 	border-bottom: var( --border-width-base ) solid var( --border-color-base );
@@ -176,12 +177,26 @@
 	width: 100%;
 }
 
+#advancedcategories-pages-app .advancedcategories-agrid--cargo .advancedcategories-row__page {
+	width: 40%;
+	min-width: 12rem;
+}
+
 #advancedcategories-pages-app .advancedcategories-row__page-inner {
 	display: flex;
 	align-items: center;
 	gap: var( --space-sm );
 	min-width: 0;
 	width: 100%;
+}
+
+#advancedcategories-pages-app .advancedcategories-row__text {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	justify-content: center;
+	min-width: 0;
+	gap: 1px;
 }
 
 #advancedcategories-pages-app .advancedcategories-row__thumb-link {
@@ -216,8 +231,6 @@
 
 #advancedcategories-pages-app .advancedcategories-agrid a.advancedcategories-row__name {
 	display: block;
-	flex: 1;
-	min-width: 0;
 	overflow: hidden;
 	color: var( --color-progressive );
 	font-weight: var( --font-weight-normal );
@@ -236,6 +249,25 @@
 #advancedcategories-pages-app .advancedcategories-row--redirect .advancedcategories-row__name {
 	font-style: italic;
 	color: var( --color-subtle );
+}
+
+#advancedcategories-pages-app .advancedcategories-row__description {
+	display: -webkit-box;
+	overflow: hidden;
+	color: var( --color-subtle );
+	font-size: var( --font-size-small );
+	font-weight: var( --font-weight-normal );
+	line-height: var( --line-height-small );
+	white-space: normal;
+	-webkit-box-orient: vertical;
+	line-clamp: 2;
+}
+
+#advancedcategories-pages-app .advancedcategories-row__cargo {
+	max-width: 14rem;
+	overflow-wrap: anywhere;
+	color: var( --color-base );
+	white-space: normal;
 }
 
 #advancedcategories-pages-app .advancedcategories-pages {

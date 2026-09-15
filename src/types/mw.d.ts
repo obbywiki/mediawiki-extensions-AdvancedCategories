@@ -4,6 +4,13 @@ export type CategoryThumbnail = {
 	height: number;
 };
 
+export type CargoValue = string | string[] | null;
+
+export type CategoryColumn = {
+	key: string;
+	label: string;
+};
+
 export type CategoryPage = {
 	page_id: number;
 	title: string;
@@ -12,6 +19,8 @@ export type CategoryPage = {
 	letter: string;
 	is_redirect: boolean;
 	thumbnail: CategoryThumbnail | null;
+	description: string | null;
+	cargo: Record<string, CargoValue>;
 };
 
 export type CategoryPageLink = {
@@ -45,6 +54,7 @@ export type AdvancedCategoriesConfig = {
 	letters: CategoryLetter[];
 	pages: CategoryPage[];
 	pagination: CategoryPagination;
+	columns: CategoryColumn[];
 };
 
 declare global {

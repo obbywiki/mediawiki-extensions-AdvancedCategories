@@ -1,7 +1,9 @@
 <?php
 
 use MediaWiki\Extension\AdvancedCategories\AzIndex;
+use MediaWiki\Extension\AdvancedCategories\CargoLookup;
 use MediaWiki\Extension\AdvancedCategories\CategoryPagingIndex;
+use MediaWiki\Extension\AdvancedCategories\PageDescriptionsLookup;
 use MediaWiki\Extension\AdvancedCategories\PageImagesLookup;
 use MediaWiki\MediaWikiServices;
 
@@ -13,6 +15,17 @@ return [
 		return new PageImagesLookup(
 			$services->getPageProps(),
 			$services->getRepoGroup()
+		);
+	},
+	'AdvancedCategories.PageDescriptionsLookup' => static function ( MediaWikiServices $services ): PageDescriptionsLookup {
+		return new PageDescriptionsLookup(
+			$services->getPageProps()
+		);
+	},
+	'AdvancedCategories.CargoLookup' => static function ( MediaWikiServices $services ): CargoLookup {
+		return new CargoLookup(
+			$services->getPageProps(),
+			$services->getMainWANObjectCache()
 		);
 	},
 	'AdvancedCategories.CategoryPagingIndex' => static function ( MediaWikiServices $services ): CategoryPagingIndex {

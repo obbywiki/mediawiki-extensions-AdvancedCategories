@@ -25,24 +25,42 @@
 						>
 					</span>
 				</a>
-				<a
-					class="advancedcategories-row__name"
-					:href="page.url"
-				>
-					{{ page.display_title }}
-				</a>
+				<div class="advancedcategories-row__text">
+					<a
+						class="advancedcategories-row__name"
+						:href="page.url"
+					>
+						{{ page.display_title }}
+					</a>
+					<div
+						v-if="page.description"
+						class="advancedcategories-row__description"
+					>
+						{{ page.description }}
+					</div>
+				</div>
 			</div>
+		</td>
+		<td
+			v-for="column in columns"
+			:key="column.key"
+			class="advancedcategories-row__cargo"
+		>
+			{{ cargo_text( page.cargo[ column.key ] ) }}
 		</td>
 	</tr>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CategoryPage } from '../types/mw';
+import type { CargoValue, CategoryColumn, CategoryPage } from '../types/mw';
 
-const props = defineProps<{
+const props = withDefaults( defineProps<{
 	page: CategoryPage;
-}>();
+	columns?: CategoryColumn[];
+}>(), {
+	columns: () => []
+} );
 
 const min_ratio = 1 / 2;
 const max_ratio = 21 / 9;
@@ -57,4 +75,11 @@ const thumb_style = computed( () => {
 
 	return { aspectRatio: String( ratio ) };
 } );
+
+function cargo_text( value: CargoValue | undefined ): string {
+	if ( value === undefined || value === null ) { return ''; }
+	if ( Array.isArray( value ) ) { return value.filter( ( part ) => part !== '' ).join( ', ' ); }
+
+	return value;
+}
 </script>

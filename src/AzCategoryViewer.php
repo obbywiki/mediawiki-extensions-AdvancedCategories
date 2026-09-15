@@ -77,11 +77,36 @@ class AzCategoryViewer extends CategoryViewer {
 			$titles[] = $member['title'];
 		}
 		$thumbnails = $this->page_images()->thumbnails_for_titles( $titles, $width, $height );
+		$descriptions = $this->page_descriptions()->descriptions_for_titles( $titles );
+		$declaration = $this->cargo_lookup()->declaration_for_title(
+			Title::newFromPageIdentity( $this->page )
+		);
+		$columns = $declaration['fields'] ?? [];
+		$cargo_rows = [];
+		if ( $declaration !== null ) {
+			$page_ids = [];
+			foreach ( $titles as $title ) {
+				$page_ids[] = $title->getArticleID();
+			}
+			$field_keys = [];
+			foreach ( $columns as $column ) {
+				$field_keys[] = $column['key'];
+			}
+			$cargo_rows = $this->cargo_lookup()->values_for_page_ids(
+				$declaration['table'],
+				$field_keys,
+				$page_ids
+			);
+		}
 
 		$pages = [];
 		foreach ( $this->page_members as $member ) {
 			$title = $member['title'];
 			$page_id = $title->getArticleID();
+			$cargo = [];
+			foreach ( $columns as $column ) {
+				$cargo[$column['key']] = $cargo_rows[$page_id][$column['key']] ?? null;
+			}
 			$pages[] = [
 				'page_id' => $page_id,
 				'title' => $title->getPrefixedText(),
@@ -90,6 +115,8 @@ class AzCategoryViewer extends CategoryViewer {
 				'letter' => $member['letter'],
 				'is_redirect' => $member['is_redirect'],
 				'thumbnail' => $thumbnails[$page_id] ?? null,
+				'description' => $descriptions[$page_id] ?? null,
+				'cargo' => $cargo,
 			];
 		}
 
@@ -98,6 +125,7 @@ class AzCategoryViewer extends CategoryViewer {
 				'letters' => $this->letter_config(),
 				'pages' => $pages,
 				'pagination' => $this->pagination_config(),
+				'columns' => $columns,
 			],
 		] );
 	}
@@ -569,6 +597,14 @@ class AzCategoryViewer extends CategoryViewer {
 
 	private function page_images(): PageImagesLookup {
 		return MediaWikiServices::getInstance()->get( 'AdvancedCategories.PageImagesLookup' );
+	}
+
+	private function page_descriptions(): PageDescriptionsLookup {
+		return MediaWikiServices::getInstance()->get( 'AdvancedCategories.PageDescriptionsLookup' );
+	}
+
+	private function cargo_lookup(): CargoLookup {
+		return MediaWikiServices::getInstance()->get( 'AdvancedCategories.CargoLookup' );
 	}
 
 	private function paging_index(): CategoryPagingIndex {

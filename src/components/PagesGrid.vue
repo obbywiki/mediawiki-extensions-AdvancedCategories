@@ -1,12 +1,20 @@
 <template>
 	<table
 		class="advancedcategories-agrid"
+		:class="{ 'advancedcategories-agrid--cargo': columns.length > 0 }"
 		:aria-label="caption"
 	>
 		<thead>
 			<tr>
 				<th scope="col">
 					{{ page_heading }}
+				</th>
+				<th
+					v-for="column in columns"
+					:key="column.key"
+					scope="col"
+				>
+					{{ column.label }}
 				</th>
 			</tr>
 		</thead>
@@ -16,7 +24,10 @@
 			:key="group.key"
 		>
 			<tr class="advancedcategories-group-heading">
-				<th scope="colgroup">
+				<th
+					scope="colgroup"
+					:colspan="column_count"
+				>
 					{{ group.label }}
 				</th>
 			</tr>
@@ -24,6 +35,7 @@
 				v-for="page in group.pages"
 				:key="page.page_id"
 				:page="page"
+				:columns="columns"
 			/>
 		</tbody>
 	</table>
@@ -31,16 +43,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CategoryPage } from '../types/mw';
+import type { CategoryColumn, CategoryPage } from '../types/mw';
 import { bucket_letter, letter_id, msg } from '../utils/letters';
 import PageRow from './PageRow.vue';
 
-const props = defineProps<{
+const props = withDefaults( defineProps<{
 	pages: CategoryPage[];
-}>();
+	columns?: CategoryColumn[];
+}>(), {
+	columns: () => []
+} );
 
 const page_heading = computed( () => msg( 'advancedcategories-column-page' ) );
 const caption = computed( () => msg( 'advancedcategories-agrid-caption' ) );
+const columns = computed( () => props.columns );
+const column_count = computed( () => 1 + columns.value.length );
 
 const groups = computed( () => {
 	const grouped = new Map<string, CategoryPage[]>();

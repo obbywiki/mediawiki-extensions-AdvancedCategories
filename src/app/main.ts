@@ -13,7 +13,15 @@ function read_config(): AdvancedCategoriesConfig | null {
 		return null;
 	}
 
-	return config;
+	return {
+		...config,
+		columns: Array.isArray( config.columns ) ? config.columns : [],
+		pages: config.pages.map( ( page ) => ( {
+			...page,
+			description: typeof page.description === 'string' ? page.description : null,
+			cargo: page.cargo && typeof page.cargo === 'object' ? page.cargo : {},
+		} ) ),
+	};
 }
 
 function mount(): void {

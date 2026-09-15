@@ -5,9 +5,10 @@ namespace MediaWiki\Extension\AdvancedCategories;
 use MediaWiki\Output\Hook\BeforePageDisplayHook;
 use MediaWiki\Page\CategoryPage;
 use MediaWiki\Page\Hook\CategoryPageViewHook;
+use MediaWiki\Parser\Hook\ParserFirstCallInitHook;
 use ReflectionProperty;
 
-class Hooks implements BeforePageDisplayHook, CategoryPageViewHook {
+class Hooks implements BeforePageDisplayHook, CategoryPageViewHook, ParserFirstCallInitHook {
 
 	/** @inheritDoc */
 	public function onCategoryPageView( $catpage ) {
@@ -28,6 +29,14 @@ class Hooks implements BeforePageDisplayHook, CategoryPageViewHook {
 
 		$out->addModuleStyles( [ AzIndex::STYLE_MODULE ] );
 		$out->addModules( [ AzIndex::APP_MODULE ] );
+	}
+
+	/** @inheritDoc */
+	public function onParserFirstCallInit( $parser ) {
+		$parser->setFunctionHook(
+			'advancedcategories',
+			[ ParserFunctions::class, 'advancedcategories' ]
+		);
 	}
 
 }
