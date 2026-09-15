@@ -16,7 +16,7 @@
 	box-sizing: border-box;
 	height: 100%;
 	min-width: 0;
-	border-radius: var(--border-radius-medium);
+	border-radius: var( --border-radius-medium );
 }
 
 #mw-subcategories a.advancedcategories-subcategories__card,
