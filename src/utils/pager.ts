@@ -76,7 +76,7 @@ export function visible_pager_slots( current: number, page_count: number, known_
 		const previous = visible[ visible.length - 1 ];
 
 		if ( previous?.kind === 'ellipsis' ) { continue; }
-		
+
 		visible.push( slot );
 	}
 

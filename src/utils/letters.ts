@@ -69,7 +69,7 @@ export function index_letters( present_letters: CategoryLetter[] ): IndexLetter[
 			label: letter,
 			href: found !== undefined ? found.href : null,
 			page: found !== undefined ? found.page : null,
-			current: found !== undefined ? found.current : false
+			current: found !== undefined ? found.current : false,
 		};
 	} );
 }
