@@ -18,11 +18,12 @@
 				v-for="slot in slots"
 				:key="slot.kind === 'ellipsis' ? slot.key : 'page-' + slot.page"
 			>
-				<span
+				<PagerJump
 					v-if="slot.kind === 'ellipsis'"
-					class="advancedcategories-pager__ellipsis"
-					aria-hidden="true"
-				>…</span>
+					:current="pagination.page"
+					:page_count="pagination.page_count"
+					:href_for="page_href"
+				/>
 				<PagerLink
 					v-else
 					:href="page_href( slot.page )"
@@ -51,6 +52,7 @@ import {
 import type { CategoryPagination } from '../types/mw';
 import { msg } from '../utils/letters';
 import { visible_pager_slots } from '../utils/pager';
+import PagerJump from './PagerJump.vue';
 import PagerLink from './PagerLink.vue';
 
 const props = defineProps<{
@@ -88,7 +90,12 @@ function page_href( page: number ): string | null {
 	if ( page === props.pagination.page ) { return null; }
 
 	const href = href_by_page.value.get( page );
-	return href !== undefined ? href : null;
+	if ( href ) { return href; }
+	if ( href === null ) { return null; }
+	if ( page === 1 ) { return props.pagination.first_url; }
+	if ( page === props.pagination.page_count ) { return props.pagination.last_url; }
+
+	return null;
 }
 
 function page_label( page: number ): string {

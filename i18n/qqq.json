@@ -17,6 +17,7 @@
 	"advancedcategories-pager-status": "Pagination status. $1 is the first item number on the current page, $2 is the last item number, and $3 is the total number of pages in the category.",
 	"advancedcategories-pager-status-total": "Pagination status when the current offset is not known. $1 is the total number of pages in the category.",
 	"advancedcategories-pager-page": "Accessible name for a numbered page button in the category member pager. $1 is the page number.",
+	"advancedcategories-pager-jump": "Accessible name for the pager control that lets the user type a page number to jump to. $1 is the last page number.",
 	"advancedcategories-tracking-category": "Name of the tracking category for pages that use #advancedcategories.",
 	"advancedcategories-tracking-category-desc": "Description of the tracking category on Special:TrackingCategories.",
 	"advancedcategories-cargo-not-loaded": "Parser warning when #advancedcategories is used and Cargo is not installed.",

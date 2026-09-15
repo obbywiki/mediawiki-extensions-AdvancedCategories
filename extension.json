@@ -97,6 +97,7 @@
 				"advancedcategories-pager-status",
 				"advancedcategories-pager-status-total",
 				"advancedcategories-pager-page",
+				"advancedcategories-pager-jump",
 				"table_pager_prev",
 				"table_pager_next"
 			]

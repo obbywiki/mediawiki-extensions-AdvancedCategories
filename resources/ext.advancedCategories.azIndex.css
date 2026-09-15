@@ -337,18 +337,14 @@
 
 #advancedcategories-pages-app .advancedcategories-pager__glyph .cdx-icon,
 #advancedcategories-pages-app .advancedcategories-pager__glyph .cdx-icon svg {
+	box-sizing: border-box;
 	display: block;
+	min-width: 1rem;
+	min-height: 1rem;
 	width: 1rem;
 	height: 1rem;
 	margin: 0;
-}
-
-#advancedcategories-pages-app .advancedcategories-pager__icon[ rel='prev' ] .cdx-icon svg {
-	transform: translateX( 0.125rem );
-}
-
-#advancedcategories-pages-app .advancedcategories-pager__icon[ rel='next' ] .cdx-icon svg {
-	transform: translateX( -0.125rem );
+	padding: 0;
 }
 
 #advancedcategories-pages-app a.advancedcategories-pager__button,
@@ -361,22 +357,33 @@
 	transform: none;
 }
 
-#advancedcategories-pages-app a.advancedcategories-pager__button:hover {
+#advancedcategories-pages-app button.advancedcategories-pager__button {
+	appearance: none;
+	font-family: inherit;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+#advancedcategories-pages-app a.advancedcategories-pager__button:hover,
+#advancedcategories-pages-app button.advancedcategories-pager__button:hover {
 	background-color: var( --background-color-interactive-subtle );
 	border-color: var( --border-color-subtle );
 	color: var( --color-base );
 	text-decoration: none;
 }
 
-#advancedcategories-pages-app a.advancedcategories-pager__button:active {
+#advancedcategories-pages-app a.advancedcategories-pager__button:active,
+#advancedcategories-pages-app button.advancedcategories-pager__button:active {
 	background-color: var( --background-color-interactive );
 }
 
-#advancedcategories-pages-app a.advancedcategories-pager__button:focus {
+#advancedcategories-pages-app a.advancedcategories-pager__button:focus,
+#advancedcategories-pages-app button.advancedcategories-pager__button:focus {
 	outline: 0;
 }
 
-#advancedcategories-pages-app a.advancedcategories-pager__button:focus-visible {
+#advancedcategories-pages-app a.advancedcategories-pager__button:focus-visible,
+#advancedcategories-pages-app button.advancedcategories-pager__button:focus-visible {
 	border-color: var( --border-color-progressive );
 	outline: 2px solid var( --color-progressive );
 	outline-offset: 1px;
@@ -418,10 +425,39 @@
 }
 
 #advancedcategories-pages-app .advancedcategories-pager__ellipsis {
+	color: var( --color-subtle );
+}
+
+#advancedcategories-pages-app .advancedcategories-pager__jump {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	min-width: var( --space-md );
+	margin: 0;
+	padding: 0;
+}
+
+#advancedcategories-pages-app input.advancedcategories-pager__jump-input {
+	box-sizing: border-box;
+	width: auto;
+	min-width: calc( var( --space-unit ) * 2 );
+	height: calc( var( --space-unit ) * 2 );
 	min-height: calc( var( --space-unit ) * 2 );
-	color: var( --color-subtle );
+	max-height: calc( var( --space-unit ) * 2 );
+	margin: 0;
+	padding: 0 var( --space-xxs );
+	border: var( --border-width-base ) solid var( --border-color-progressive );
+	border-radius: var( --border-radius-base );
+	background-color: var( --background-color-base );
+	color: var( --color-base );
+	font-family: inherit;
+	font-size: var( --font-size-small );
+	font-weight: var( --font-weight-normal );
+	line-height: 1;
+	text-align: center;
+	box-shadow: none;
+	appearance: none;
+}
+
+#advancedcategories-pages-app input.advancedcategories-pager__jump-input:focus {
+	outline: 2px solid var( --color-progressive );
+	outline-offset: 1px;
 }
