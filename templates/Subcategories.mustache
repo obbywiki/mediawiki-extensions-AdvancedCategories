@@ -1,0 +1,14 @@
+<ul class="advancedcategories-subcategories" role="list">
+	{{#items}}
+	<li class="advancedcategories-subcategories__item">
+		<a class="cdx-card cdx-card--is-link advancedcategories-subcategories__card{{#is_redirect}} advancedcategories-subcategories__card--redirect{{/is_redirect}}" href="{{url}}">
+			<span class="cdx-card__text">
+				<span class="cdx-card__text__title">{{title}}</span>
+				{{#description}}
+				<span class="cdx-card__text__description">{{description}}</span>
+				{{/description}}
+			</span>
+		</a>
+	</li>
+	{{/items}}
+</ul>

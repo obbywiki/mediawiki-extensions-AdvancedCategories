@@ -2,8 +2,10 @@
 
 namespace MediaWiki\Extension\AdvancedCategories;
 
+use MediaWiki\Category\Category;
 use MediaWiki\Category\CategoryViewer;
 use MediaWiki\Html\Html;
+use MediaWiki\Html\TemplateParser;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\PageReference;
 use MediaWiki\Title\Title;
@@ -13,14 +15,34 @@ class AzCategoryViewer extends CategoryViewer {
 	/** @var array<int, array{title: Title, letter: string, is_redirect: bool, sortkey: string}> */
 	private array $page_members = [];
 
+	/** @var array<int, array{title: Title, is_redirect: bool, sortkey: string}> */
+	private array $subcategory_members = [];
+
 	/** @var array{total: int, limit: int, start: int, end: int, page: int, page_count: int, precise: bool, first_url: ?string, prev_url: ?string, next_url: ?string, last_url: ?string, page_links: list<array{page: int, url: ?string}>}|null */
 	private ?array $pagination = null;
 
 	/** @inheritDoc */
 	protected function clearCategoryState() {
 		$this->page_members = [];
+		$this->subcategory_members = [];
 		$this->pagination = null;
 		parent::clearCategoryState();
+	}
+
+	/** @inheritDoc */
+	public function addSubcategoryObject( Category $cat, string $sortkey, int $pageLength ): void {
+		$page = $cat->getPage();
+		parent::addSubcategoryObject( $cat, $sortkey, $pageLength );
+		if ( $page === null ) {
+			return;
+		}
+
+		$title = MediaWikiServices::getInstance()->getTitleFactory()->newFromPageReference( $page );
+		$this->subcategory_members[] = [
+			'title' => $title,
+			'is_redirect' => $title->isRedirect(),
+			'sortkey' => $sortkey,
+		];
 	}
 
 	/** @inheritDoc */
@@ -48,6 +70,21 @@ class AzCategoryViewer extends CategoryViewer {
 		if ( $this->flip['page'] ) {
 			$this->page_members = array_reverse( $this->page_members );
 		}
+		if ( $this->flip['subcat'] ) {
+			$this->subcategory_members = array_reverse( $this->subcategory_members );
+		}
+	}
+
+	/** @inheritDoc */
+	protected function getSubcategorySection() {
+		$html = parent::getSubcategorySection();
+		if ( $html === '' || $this->subcategory_members === [] ) {
+			return $html;
+		}
+
+		$this->getOutput()->addModuleStyles( [ AzIndex::STYLE_MODULE ] );
+
+		return $this->replace_category_list( $html, $this->subcategories_html() );
 	}
 
 	/** @inheritDoc */
@@ -506,6 +543,37 @@ class AzCategoryViewer extends CategoryViewer {
 		$list_end = $this->matching_div_end( $pages_html, $list_start );
 
 		return substr( $pages_html, 0, $list_start ) . $replacement . substr( $pages_html, $list_end );
+	}
+
+	private function subcategories_html(): string {
+		$titles = [];
+		foreach ( $this->subcategory_members as $member ) {
+			$titles[] = $member['title'];
+		}
+		$descriptions = $this->page_descriptions()->descriptions_for_titles( $titles );
+
+		$items = [];
+		foreach ( $this->subcategory_members as $member ) {
+			$title = $member['title'];
+			$item = [
+				'url' => $title->getLocalURL(),
+				'title' => $title->getText(),
+				'is_redirect' => $member['is_redirect'],
+			];
+			$description = $descriptions[ $title->getArticleID() ] ?? null;
+			if ( is_string( $description ) && $description !== '' ) {
+				$item['description'] = $description;
+			}
+			$items[] = $item;
+		}
+
+		return $this->template_parser()->processTemplate( 'Subcategories', [
+			'items' => $items,
+		] );
+	}
+
+	private function template_parser(): TemplateParser {
+		return new TemplateParser( dirname( __DIR__ ) . '/templates' );
 	}
 
 	private function pages_app_html(): string {

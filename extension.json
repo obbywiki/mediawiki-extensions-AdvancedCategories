@@ -60,7 +60,15 @@
 
 	"ResourceModules": {
 		"ext.advancedCategories.styles": {
-			"styles": "resources/ext.advancedCategories.azIndex.css"
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
+			"styles": [
+				"resources/ext.advancedCategories.azIndex.css",
+				"resources/ext.advancedCategories.subcategories.css"
+			],
+			"codexStyleOnly": true,
+			"codexComponents": [
+				"CdxCard"
+			]
 		},
 		"ext.advancedCategories.app": {
 			"class": "MediaWiki\\ResourceLoader\\CodexModule",
