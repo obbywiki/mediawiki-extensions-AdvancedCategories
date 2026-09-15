@@ -31,13 +31,17 @@
 
 	"HookHandlers": {
 		"main": {
-			"class": "MediaWiki\\Extension\\AdvancedCategories\\Hooks"
+			"class": "MediaWiki\\Extension\\AdvancedCategories\\Hooks",
+			"services": [
+				"PageProps"
+			]
 		}
 	},
 
 	"Hooks": {
 		"BeforePageDisplay": "main",
 		"CategoryPageView": "main",
+		"GetDoubleUnderscoreIDs": "main",
 		"ParserFirstCallInit": "main"
 	},
 

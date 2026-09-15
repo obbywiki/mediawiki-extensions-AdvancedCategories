@@ -17,7 +17,7 @@
 	"advancedcategories-pager-status": "$1-$2 of $3",
 	"advancedcategories-pager-status-total": "$1 pages",
 	"advancedcategories-pager-page": "Page $1",
-	"advancedcategories-pager-jump": "Go to page (1–$1)",
+	"advancedcategories-pager-jump": "Go to page (1-$1)",
 	"advancedcategories-tracking-category": "Pages using AdvancedCategories",
 	"advancedcategories-tracking-category-desc": "The page uses the #advancedcategories parser function.",
 	"advancedcategories-cargo-not-loaded": "Cargo is not installed; #advancedcategories cannot show table columns.",
