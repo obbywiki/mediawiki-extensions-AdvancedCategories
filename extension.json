@@ -1,0 +1,95 @@
+{
+	"manifest_version": 2,
+	"name": "AdvancedCategories",
+	"descriptionmsg": "advancedcategories-desc",
+	"author": [
+		"[https://wolfite.dev Wolfite]",
+		"[https://obby.wiki The Obby Wiki]"
+	],
+	"version": "0.1.0",
+	"license-name": "GPL-3.0-or-later",
+	"url": "https://github.com/obbywiki/mediawiki-extensions-AdvancedCategories",
+
+	"type": "other",
+
+	"requires": {
+		"MediaWiki": ">= 1.46.0",
+		"platform": {
+			"php": ">= 8.3"
+		}
+	},
+
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\AdvancedCategories\\": "src/"
+	},
+
+	"MessagesDirs": {
+		"AdvancedCategories": [
+			"i18n"
+		]
+	},
+
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\AdvancedCategories\\Hooks"
+		}
+	},
+
+	"Hooks": {
+		"BeforePageDisplay": "main",
+		"CategoryPageView": "main"
+	},
+
+	"ServiceWiringFiles": [
+		"src/ServiceWiring.php"
+	],
+
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "AdvancedCategories"
+	},
+
+	"ResourceModules": {
+		"ext.advancedCategories.styles": {
+			"styles": "resources/ext.advancedCategories.azIndex.css"
+		},
+		"ext.advancedCategories.app": {
+			"class": "MediaWiki\\ResourceLoader\\CodexModule",
+			"localBasePath": "resources/dist",
+			"remoteExtPath": "AdvancedCategories/resources/dist",
+			"codexComponents": [
+				"CdxIcon"
+			],
+			"packageFiles": [
+				"advancedcategories-app.js"
+			],
+			"dependencies": [
+				"ext.advancedCategories.styles",
+				"vue"
+			],
+			"messages": [
+				"advancedcategories-az-index",
+				"advancedcategories-az-index-aria",
+				"advancedcategories-az-index-letter",
+				"advancedcategories-az-index-letter-page",
+				"advancedcategories-az-index-other",
+				"advancedcategories-thumbnail-alt",
+				"advancedcategories-column-page",
+				"advancedcategories-agrid-caption",
+				"advancedcategories-pager-aria",
+				"advancedcategories-pager-status",
+				"advancedcategories-pager-status-total",
+				"advancedcategories-pager-page",
+				"table_pager_prev",
+				"table_pager_next"
+			]
+		}
+	},
+
+	"config": {
+		"AdvancedCategoriesThumbnailWidth": {
+			"value": 80,
+			"description": "Maximum width in pixels for PageImages thumbnails in the category member list. Height is derived at 16:9."
+		}
+	}
+}

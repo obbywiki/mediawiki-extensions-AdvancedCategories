@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Wolfite"
+		]
+	},
+	"advancedcategories-desc": "Adds A-Z jump links and a thumbnail list on category pages.",
+	"advancedcategories-az-index": "A-Z",
+	"advancedcategories-az-index-aria": "Jump to category members by letter",
+	"advancedcategories-az-index-letter": "Pages starting with $1",
+	"advancedcategories-az-index-letter-page": "$1, page $2",
+	"advancedcategories-az-index-other": "OTHER",
+	"advancedcategories-thumbnail-alt": "Thumbnail for $1",
+	"advancedcategories-column-page": "Page",
+	"advancedcategories-agrid-caption": "Pages in this category",
+	"advancedcategories-pager-aria": "Category member pages",
+	"advancedcategories-pager-status": "$1-$2 of $3",
+	"advancedcategories-pager-status-total": "$1 pages",
+	"advancedcategories-pager-page": "Page $1"
+}

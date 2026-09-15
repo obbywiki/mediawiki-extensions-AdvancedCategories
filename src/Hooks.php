@@ -1,0 +1,33 @@
+<?php
+
+namespace MediaWiki\Extension\AdvancedCategories;
+
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
+use MediaWiki\Page\CategoryPage;
+use MediaWiki\Page\Hook\CategoryPageViewHook;
+use ReflectionProperty;
+
+class Hooks implements BeforePageDisplayHook, CategoryPageViewHook {
+
+	/** @inheritDoc */
+	public function onCategoryPageView( $catpage ) {
+		$property = new ReflectionProperty( CategoryPage::class, 'mCategoryViewerClass' );
+		$property->setValue( $catpage, AzCategoryViewer::class );
+	}
+
+	/** @inheritDoc */
+	public function onBeforePageDisplay( $out, $skin ): void {
+		$title = $out->getTitle();
+		if ( $title === null || !$title->inNamespace( NS_CATEGORY ) ) {
+			return;
+		}
+
+		if ( $out->getRequest()->getVal( 'action', 'view' ) !== 'view' ) {
+			return;
+		}
+
+		$out->addModuleStyles( [ AzIndex::STYLE_MODULE ] );
+		$out->addModules( [ AzIndex::APP_MODULE ] );
+	}
+
+}

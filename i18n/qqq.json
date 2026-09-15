@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Wolfite"
+		]
+	},
+	"advancedcategories-desc": "{{desc|name=AdvancedCategories|url=https://github.com/obbywiki/mediawiki-extensions-AdvancedCategories}}",
+	"advancedcategories-az-index": "Visible label for the A-Z jump index on category pages.",
+	"advancedcategories-az-index-aria": "Accessible name for the A-Z jump index on category pages.",
+	"advancedcategories-az-index-letter": "Title for an A-Z index letter that jumps to matching category members. $1 is the letter.",
+	"advancedcategories-az-index-letter-page": "Title for an A-Z index letter that has a known page. $1 is the letter or bucket label, $2 is the page number.",
+	"advancedcategories-az-index-other": "Label for the A-Z index bucket covering letters that are not A-Z, digits, or common symbols.",
+	"advancedcategories-thumbnail-alt": "Alt text for a category member thumbnail. $1 is the page title.",
+	"advancedcategories-column-page": "Column header for the page image and title in the category member list.",
+	"advancedcategories-agrid-caption": "Accessible caption for the category member list table.",
+	"advancedcategories-pager-aria": "Accessible name for the category member pagination controls.",
+	"advancedcategories-pager-status": "Pagination status. $1 is the first item number on the current page, $2 is the last item number, and $3 is the total number of pages in the category.",
+	"advancedcategories-pager-status-total": "Pagination status when the current offset is not known. $1 is the total number of pages in the category.",
+	"advancedcategories-pager-page": "Accessible name for a numbered page button in the category member pager. $1 is the page number."
+}
