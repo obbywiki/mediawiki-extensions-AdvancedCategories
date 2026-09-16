@@ -70,6 +70,8 @@ class Pager {
 	}
 
 	/**
+	 * @param int $current
+	 * @param int $page_count
 	 * @param array<int, true> $known_pages
 	 * @return list<array{kind: 'page', page: int, current: bool}|array{kind: 'ellipsis', key: string}>
 	 */
