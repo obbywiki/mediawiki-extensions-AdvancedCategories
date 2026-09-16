@@ -428,8 +428,15 @@
 	color: var( --color-subtle );
 }
 
+#advancedcategories-pages-app .advancedcategories-pager__jump-slot {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+}
+
 #advancedcategories-pages-app .advancedcategories-pager__jump {
 	display: inline-flex;
+	flex-shrink: 0;
 	align-items: center;
 	margin: 0;
 	padding: 0;

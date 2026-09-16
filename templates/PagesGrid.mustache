@@ -1,0 +1,41 @@
+<table class="advancedcategories-agrid{{#has_cargo}} advancedcategories-agrid--cargo{{/has_cargo}}" aria-label="{{caption}}">
+	<thead>
+		<tr>
+			<th scope="col">{{page_heading}}</th>
+			{{#columns}}
+			<th scope="col">{{label}}</th>
+			{{/columns}}
+		</tr>
+	</thead>
+	{{#groups}}
+	<tbody{{#has_group_id}} id="{{group_id}}"{{/has_group_id}}>
+		<tr class="advancedcategories-group-heading">
+			<th scope="colgroup" colspan="{{column_count}}">{{label}}</th>
+		</tr>
+		{{#pages}}
+		<tr class="advancedcategories-row{{#is_redirect}} advancedcategories-row--redirect{{/is_redirect}}">
+			<td class="advancedcategories-row__page">
+				<div class="advancedcategories-row__page-inner">
+					<a class="advancedcategories-row__thumb-link" href="{{url}}" tabindex="-1" aria-hidden="true">
+						<span class="advancedcategories-row__thumb" style="{{thumb_style}}">
+							{{#has_thumbnail}}
+							<img class="advancedcategories-row__image" src="{{thumb_url}}" alt="" width="{{thumb_width}}" height="{{thumb_height}}">
+							{{/has_thumbnail}}
+						</span>
+					</a>
+					<div class="advancedcategories-row__text">
+						<a class="advancedcategories-row__name" href="{{url}}">{{display_title}}</a>
+						{{#description}}
+						<div class="advancedcategories-row__description">{{description}}</div>
+						{{/description}}
+					</div>
+				</div>
+			</td>
+			{{#cargo_cells}}
+			<td class="advancedcategories-row__cargo">{{text}}</td>
+			{{/cargo_cells}}
+		</tr>
+		{{/pages}}
+	</tbody>
+	{{/groups}}
+</table>

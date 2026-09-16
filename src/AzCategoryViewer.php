@@ -6,6 +6,7 @@ use MediaWiki\Category\Category;
 use MediaWiki\Category\CategoryViewer;
 use MediaWiki\Html\Html;
 use MediaWiki\Html\TemplateParser;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\PageReference;
 use MediaWiki\Title\Title;
@@ -99,14 +100,16 @@ class AzCategoryViewer extends CategoryViewer {
 		$html = $this->strip_core_page_paging( $html );
 		$html = $this->strip_pages_count_message( $html );
 
-		$this->publish_config();
 		$this->getOutput()->addModuleStyles( [ AzIndex::STYLE_MODULE ] );
 		$this->getOutput()->addModules( [ AzIndex::APP_MODULE ] );
 
 		return $html;
 	}
 
-	private function publish_config(): void {
+	/**
+	 * @return array{pages: list<array{page_id: int, title: string, display_title: string, url: string, letter: string, is_redirect: bool, thumbnail: ?array{url: string, width: int, height: int}, description: ?string, cargo: array<string, mixed>}>, columns: list<array{key: string, label: string}>}
+	 */
+	private function member_list_data(): array {
 		$width = max( 1, (int)$this->getConfig()->get( 'AdvancedCategoriesThumbnailWidth' ) );
 		$height = max( 1, (int)round( $width * 9 / 16 ) );
 		$titles = [];
@@ -157,14 +160,10 @@ class AzCategoryViewer extends CategoryViewer {
 			];
 		}
 
-		$this->getOutput()->addJsConfigVars( [
-			'wgAdvancedCategories' => [
-				'letters' => $this->letter_config(),
-				'pages' => $pages,
-				'pagination' => $this->pagination_config(),
-				'columns' => $columns,
-			],
-		] );
+		return [
+			'pages' => $pages,
+			'columns' => $columns,
+		];
 	}
 
 	/**
@@ -210,7 +209,7 @@ class AzCategoryViewer extends CategoryViewer {
 		foreach ( $buckets as $bucket => $info ) {
 			$letters[] = [
 				'letter' => $bucket,
-				'url' => $this->letter_url( $bucket, $info['from'] ),
+				'url' => $this->letter_url( $bucket, $info['from'], $info['page'] ),
 				'page' => $info['page'],
 				'current' => $bucket === $active_bucket,
 			];
@@ -241,12 +240,25 @@ class AzCategoryViewer extends CategoryViewer {
 		return null;
 	}
 
-	private function letter_url( string $bucket, string $from ): string {
-		if ( $bucket === AzIndex::HASH_BUCKET || $from === '' ) {
-			return $this->category_url( null, null, '' );
+	private function letter_url( string $bucket, string $from, int $page ): string {
+		$fragment = AzIndex::letter_id( $bucket );
+		$paging = $this->pagination_config();
+		if ( $page === $paging['page'] ) {
+			$current_from = $this->from['page'] ?? null;
+			$current_until = $this->until['page'] ?? null;
+			$base = $this->category_url(
+				is_string( $current_from ) && $current_from !== '' ? $current_from : null,
+				is_string( $current_until ) && $current_until !== '' ? $current_until : null,
+				''
+			);
+			return $base . '#' . $fragment;
 		}
 
-		return $this->category_url( $from, null, '' );
+		if ( $bucket === AzIndex::HASH_BUCKET || $from === '' ) {
+			return $this->category_url( null, null, '' ) . '#' . $fragment;
+		}
+
+		return $this->category_url( $from, null, '' ) . '#' . $fragment;
 	}
 
 	/**
@@ -577,43 +589,319 @@ class AzCategoryViewer extends CategoryViewer {
 	}
 
 	private function pages_app_html(): string {
+		$data = $this->member_list_data();
+
+		return $this->template_parser()->processTemplate( 'Pages', [
+			'az' => $this->az_view(),
+			'pager' => $this->pager_view(),
+			'grid' => $this->grid_view( $data['pages'], $data['columns'] ),
+		] );
+	}
+
+	/**
+	 * @return array{aria_label: string, items: list<array<string, mixed>>}
+	 */
+	private function az_view(): array {
+		$az_index = $this->az_index();
+		$other_label = $this->msg( 'advancedcategories-az-index-other' )->text();
 		$items = [];
-		foreach ( $this->page_members as $member ) {
-			$title = $member['title'];
-			$link = Html::element(
-				'a',
-				[ 'href' => $title->getLocalURL() ],
-				$title->getPrefixedText()
-			);
-			$items[] = Html::rawElement( 'li', [], $link );
+		foreach ( $az_index->index_letters( $this->letter_config() ) as $item ) {
+			$label = $item['letter'] === AzIndex::OTHER_BUCKET ? $other_label : $item['label'];
+			$page = $item['page'];
+			$class = 'advancedcategories-az-index__letter';
+			if ( $item['letter'] === AzIndex::OTHER_BUCKET ) {
+				$class .= ' advancedcategories-az-index__letter--other';
+			}
+			if ( $item['href'] === null ) {
+				$class .= ' advancedcategories-az-index__letter--empty';
+			}
+			if ( $item['current'] ) {
+				$class .= ' advancedcategories-az-index__letter--current';
+			}
+			if ( $page === null ) {
+				$title = $this->msg( 'advancedcategories-az-index-letter', $label )->text();
+			} else {
+				$title = $this->msg(
+					'advancedcategories-az-index-letter-page',
+					$label,
+					$this->format_num( $page )
+				)->text();
+			}
+			$items[] = [
+				'has_href' => $item['href'] !== null && $item['href'] !== '',
+				'href' => $item['href'] ?? '',
+				'class' => $class,
+				'title' => $title,
+				'label' => $label,
+				'has_page' => $page !== null,
+				'page' => $page === null ? '' : $this->format_num( $page ),
+				'current' => $item['current'],
+			];
 		}
 
+		return [
+			'aria_label' => $this->msg( 'advancedcategories-az-index-aria' )->text(),
+			'items' => $items,
+		];
+	}
+
+	/**
+	 * @return array<string, mixed>|false
+	 */
+	private function pager_view(): array|false {
 		$paging = $this->pagination_config();
-		$nav_items = [];
-		if ( $paging['prev_url'] ) {
-			$nav_items[] = Html::element(
-				'a',
-				[ 'href' => $paging['prev_url'] ],
-				$this->msg( 'table_pager_prev' )->text()
-			);
-		}
-		if ( $paging['next_url'] ) {
-			$nav_items[] = Html::element(
-				'a',
-				[ 'href' => $paging['next_url'] ],
-				$this->msg( 'table_pager_next' )->text()
-			);
+		if ( $paging['page_count'] <= 1 && !$paging['prev_url'] && !$paging['next_url'] ) {
+			return false;
 		}
 
-		$noscript_inner = '';
-		if ( $nav_items !== [] ) {
-			$noscript_inner .= Html::rawElement( 'p', [], implode( ' ', $nav_items ) );
+		$href_by_page = [];
+		$known_pages = [];
+		foreach ( $paging['page_links'] as $link ) {
+			$href_by_page[ $link['page'] ] = $link['url'];
+			$known_pages[ $link['page'] ] = true;
 		}
-		$noscript_inner .= Html::rawElement( 'ul', [], implode( '', $items ) );
 
-		$noscript = Html::rawElement( 'noscript', [], $noscript_inner );
+		$jump_label = $this->msg(
+			'advancedcategories-pager-jump',
+			$this->format_num( $paging['page_count'] )
+		)->text();
+		$hrefs = [];
+		for ( $page = 1; $page <= $paging['page_count']; $page++ ) {
+			$href = $this->page_href( $paging, $page, $href_by_page );
+			if ( $href ) {
+				$hrefs[ (string)$page ] = $href;
+			}
+		}
 
-		return Html::rawElement( 'div', [ 'id' => 'advancedcategories-pages-app' ], $noscript );
+		$slots = [];
+		foreach ( Pager::visible_slots( $paging['page'], $paging['page_count'], $known_pages ) as $slot ) {
+			if ( $slot['kind'] === 'ellipsis' ) {
+				$slots[] = [
+					'is_page' => false,
+					'jump' => [
+						'label' => $jump_label,
+						'size' => (string)max( 2, strlen( (string)$paging['page_count'] ) ),
+					],
+				];
+				continue;
+			}
+
+			$href = $this->page_href( $paging, $slot['page'], $href_by_page );
+			$disabled = $href === null && !$slot['current'];
+			$class = 'advancedcategories-pager__button advancedcategories-pager__page';
+			if ( $slot['current'] ) {
+				$class .= ' advancedcategories-pager__page--current';
+			} elseif ( $disabled ) {
+				$class .= ' advancedcategories-pager__page--disabled';
+			}
+			$slots[] = [
+				'is_page' => true,
+				'has_href' => $href !== null && $href !== '',
+				'href' => $href ?? '',
+				'class' => $class,
+				'current' => $slot['current'],
+				'disabled' => $disabled,
+				'label' => $this->msg(
+					'advancedcategories-pager-page',
+					$this->format_num( $slot['page'] )
+				)->text(),
+				'text' => $this->format_num( $slot['page'] ),
+			];
+		}
+
+		$prev_label = $this->msg( 'table_pager_prev' )->text();
+		$next_label = $this->msg( 'table_pager_next' )->text();
+		$prev_class = 'advancedcategories-pager__button advancedcategories-pager__icon';
+		$next_class = $prev_class;
+		if ( !$paging['prev_url'] ) {
+			$prev_class .= ' advancedcategories-pager__icon--disabled';
+		}
+		if ( !$paging['next_url'] ) {
+			$next_class .= ' advancedcategories-pager__icon--disabled';
+		}
+
+		if ( $paging['precise'] && $paging['start'] > 0 ) {
+			$status = $this->msg(
+				'advancedcategories-pager-status',
+				$this->format_num( $paging['start'] ),
+				$this->format_num( $paging['end'] ),
+				$this->format_num( $paging['total'] )
+			)->text();
+		} else {
+			$status = $this->msg(
+				'advancedcategories-pager-status-total',
+				$this->format_num( $paging['total'] )
+			)->text();
+		}
+
+		return [
+			'aria_label' => $this->msg( 'advancedcategories-pager-aria' )->text(),
+			'status' => $status,
+			'current_page' => (string)$paging['page'],
+			'page_count' => (string)$paging['page_count'],
+			'hrefs_json' => ( FormatJson::encode( $hrefs ) ?: '{}' ),
+			'prev_href' => $paging['prev_url'] ?? '',
+			'has_prev' => (bool)$paging['prev_url'],
+			'prev_class' => $prev_class,
+			'prev_label' => $prev_label,
+			'prev_glyph' => $this->pager_icon( '<path d="M13.417 4.707 8.124 10l5.293 5.293-1.414 1.414-6-6V9.293l6-6z"/>' ),
+			'next_href' => $paging['next_url'] ?? '',
+			'has_next' => (bool)$paging['next_url'],
+			'next_class' => $next_class,
+			'next_label' => $next_label,
+			'next_glyph' => $this->pager_icon( '<path d="M14 9.293v1.414l-5.982 6-1.415-1.414L11.896 10 6.603 4.707l1.414-1.414z"/>' ),
+			'slots' => $slots,
+		];
+	}
+
+	/**
+	 * @param array{total: int, limit: int, start: int, end: int, page: int, page_count: int, precise: bool, first_url: ?string, prev_url: ?string, next_url: ?string, last_url: ?string, page_links: list<array{page: int, url: ?string}>} $paging
+	 * @param int $page
+	 * @param array<int, ?string> $href_by_page
+	 */
+	private function page_href( array $paging, int $page, array $href_by_page ): ?string {
+		if ( $page === $paging['page'] ) {
+			return null;
+		}
+		if ( array_key_exists( $page, $href_by_page ) ) {
+			return $href_by_page[$page];
+		}
+		if ( $page === 1 ) {
+			return $paging['first_url'];
+		}
+		if ( $page === $paging['page_count'] ) {
+			return $paging['last_url'];
+		}
+
+		return null;
+	}
+
+	private function pager_icon( string $path_html ): string {
+		$classes = 'cdx-icon';
+		if ( $this->getLanguage()->isRTL() ) {
+			$classes .= ' cdx-icon--flipped';
+		}
+
+		return Html::rawElement(
+			'span',
+			[
+				'class' => 'advancedcategories-pager__glyph',
+				'aria-hidden' => 'true',
+			],
+			Html::rawElement(
+				'span',
+				[ 'class' => $classes ],
+				'<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">'
+				. $path_html
+				. '</svg>'
+			)
+		);
+	}
+
+	/**
+	 * @param list<array{page_id: int, title: string, display_title: string, url: string, letter: string, is_redirect: bool, thumbnail: ?array{url: string, width: int, height: int}, description: ?string, cargo: array<string, mixed>}> $pages
+	 * @param list<array{key: string, label: string}> $columns
+	 * @return array{caption: string, has_cargo: bool, page_heading: string, columns: list<array{label: string}>, column_count: int, groups: list<array<string, mixed>>}
+	 */
+	private function grid_view( array $pages, array $columns ): array {
+		$az_index = $this->az_index();
+		$grouped = [];
+		foreach ( $pages as $page ) {
+			$grouped[ $page['letter'] ][] = $page;
+		}
+
+		$seen = [];
+		$groups = [];
+		foreach ( $grouped as $letter => $group_pages ) {
+			$bucket = $az_index->bucket( (string)$letter );
+			$id = isset( $seen[$bucket] ) ? false : AzIndex::letter_id( $bucket );
+			if ( $id ) {
+				$seen[$bucket] = true;
+			}
+
+			$rows = [];
+			foreach ( $group_pages as $page ) {
+				$thumb = $page['thumbnail'];
+				$description = $page['description'];
+				$cargo_cells = [];
+				foreach ( $columns as $column ) {
+					$cargo_cells[] = [
+						'text' => $this->cargo_text( $page['cargo'][ $column['key'] ] ?? null ),
+					];
+				}
+				$row = [
+					'url' => $page['url'],
+					'display_title' => $page['display_title'],
+					'is_redirect' => $page['is_redirect'],
+					'thumb_style' => $this->thumb_style( $thumb ),
+					'has_thumbnail' => $thumb !== null,
+					'thumb_url' => $thumb['url'] ?? '',
+					'thumb_width' => $thumb['width'] ?? 0,
+					'thumb_height' => $thumb['height'] ?? 0,
+					'cargo_cells' => $cargo_cells,
+				];
+				if ( is_string( $description ) && $description !== '' ) {
+					$row['description'] = $description;
+				}
+				$rows[] = $row;
+			}
+
+			$groups[] = [
+				'has_group_id' => is_string( $id ) && $id !== '',
+				'group_id' => is_string( $id ) ? $id : '',
+				'label' => $letter === ' ' ? "\u{00A0}" : (string)$letter,
+				'column_count' => 1 + count( $columns ),
+				'pages' => $rows,
+			];
+		}
+
+		$column_labels = [];
+		foreach ( $columns as $column ) {
+			$column_labels[] = [
+				'label' => $column['label'],
+			];
+		}
+
+		return [
+			'caption' => $this->msg( 'advancedcategories-agrid-caption' )->text(),
+			'has_cargo' => $columns !== [],
+			'page_heading' => $this->msg( 'advancedcategories-column-page' )->text(),
+			'columns' => $column_labels,
+			'column_count' => 1 + count( $columns ),
+			'groups' => $groups,
+		];
+	}
+
+	private function thumb_style( ?array $thumb ): string {
+		if ( $thumb === null || $thumb['width'] < 1 || $thumb['height'] < 1 ) {
+			return 'aspect-ratio: 16 / 9';
+		}
+
+		$ratio = min( 21 / 9, max( 1 / 2, $thumb['width'] / $thumb['height'] ) );
+
+		return 'aspect-ratio: ' . $ratio;
+	}
+
+	private function cargo_text( mixed $value ): string {
+		if ( $value === null ) {
+			return '';
+		}
+		if ( is_array( $value ) ) {
+			$parts = [];
+			foreach ( $value as $part ) {
+				if ( $part !== '' ) {
+					$parts[] = (string)$part;
+				}
+			}
+
+			return implode( ', ', $parts );
+		}
+
+		return (string)$value;
+	}
+
+	private function format_num( int $value ): string {
+		return $this->getLanguage()->formatNum( $value );
 	}
 
 	private function matching_div_end( string $html, int $open_pos ): int {

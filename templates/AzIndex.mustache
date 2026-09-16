@@ -1,0 +1,19 @@
+<nav class="advancedcategories-az-index" aria-label="{{aria_label}}">
+	<div class="advancedcategories-az-index__letters">
+		{{#items}}
+		{{#has_href}}
+		<a class="{{class}}" href="{{href}}" title="{{title}}"{{#current}} aria-current="true"{{/current}}>
+			<span class="advancedcategories-az-index__glyph">{{label}}</span>
+			{{#has_page}}
+			<span class="advancedcategories-az-index__page">{{page}}</span>
+			{{/has_page}}
+		</a>
+		{{/has_href}}
+		{{^has_href}}
+		<span class="{{class}}" title="{{title}}">
+			<span class="advancedcategories-az-index__glyph">{{label}}</span>
+		</span>
+		{{/has_href}}
+		{{/items}}
+	</div>
+</nav>

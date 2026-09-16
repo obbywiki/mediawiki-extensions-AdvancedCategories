@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
 	extends: 'stylelint-config-wikimedia/support-basic',
 	rules: {

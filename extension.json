@@ -71,39 +71,16 @@
 			],
 			"codexStyleOnly": true,
 			"codexComponents": [
-				"CdxCard"
+				"CdxCard",
+				"CdxIcon"
 			]
 		},
-		"ext.advancedCategories.app": {
-			"class": "MediaWiki\\ResourceLoader\\CodexModule",
-			"localBasePath": "resources/dist",
-			"remoteExtPath": "AdvancedCategories/resources/dist",
-			"codexComponents": [
-				"CdxIcon"
-			],
-			"packageFiles": [
-				"advancedcategories-app.js"
+		"ext.advancedCategories": {
+			"scripts": [
+				"resources/ext.advancedCategories.js"
 			],
 			"dependencies": [
-				"ext.advancedCategories.styles",
-				"vue"
-			],
-			"messages": [
-				"advancedcategories-az-index",
-				"advancedcategories-az-index-aria",
-				"advancedcategories-az-index-letter",
-				"advancedcategories-az-index-letter-page",
-				"advancedcategories-az-index-other",
-				"advancedcategories-thumbnail-alt",
-				"advancedcategories-column-page",
-				"advancedcategories-agrid-caption",
-				"advancedcategories-pager-aria",
-				"advancedcategories-pager-status",
-				"advancedcategories-pager-status-total",
-				"advancedcategories-pager-page",
-				"advancedcategories-pager-jump",
-				"table_pager_prev",
-				"table_pager_next"
+				"ext.advancedCategories.styles"
 			]
 		}
 	},

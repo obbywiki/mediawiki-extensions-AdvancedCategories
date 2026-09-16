@@ -1,0 +1,44 @@
+<nav
+	class="advancedcategories-pager"
+	aria-label="{{aria_label}}"
+	data-current="{{current_page}}"
+	data-page-count="{{page_count}}"
+	data-hrefs="{{hrefs_json}}"
+>
+	<div class="advancedcategories-pager__controls">
+		<div class="advancedcategories-pager__status">{{status}}</div>
+		{{#has_prev}}
+		<a class="{{prev_class}}" href="{{prev_href}}" rel="prev" title="{{prev_label}}" aria-label="{{prev_label}}">{{{prev_glyph}}}</a>
+		{{/has_prev}}
+		{{^has_prev}}
+		<span class="{{prev_class}}" aria-disabled="true" title="{{prev_label}}" aria-label="{{prev_label}}">{{{prev_glyph}}}</span>
+		{{/has_prev}}
+		{{#slots}}
+		{{#jump}}
+		<span class="advancedcategories-pager__jump-slot">
+			<button
+				class="advancedcategories-pager__button advancedcategories-pager__ellipsis"
+				type="button"
+				title="{{label}}"
+				aria-label="{{label}}"
+				data-jump-size="{{size}}"
+			>…</button>
+		</span>
+		{{/jump}}
+		{{#is_page}}
+		{{#has_href}}
+		<a class="{{class}}" href="{{href}}" title="{{label}}" aria-label="{{label}}">{{text}}</a>
+		{{/has_href}}
+		{{^has_href}}
+		<span class="{{class}}"{{#current}} aria-current="page"{{/current}}{{#disabled}} aria-disabled="true"{{/disabled}} title="{{label}}" aria-label="{{label}}">{{text}}</span>
+		{{/has_href}}
+		{{/is_page}}
+		{{/slots}}
+		{{#has_next}}
+		<a class="{{next_class}}" href="{{next_href}}" rel="next" title="{{next_label}}" aria-label="{{next_label}}">{{{next_glyph}}}</a>
+		{{/has_next}}
+		{{^has_next}}
+		<span class="{{next_class}}" aria-disabled="true" title="{{next_label}}" aria-label="{{next_label}}">{{{next_glyph}}}</span>
+		{{/has_next}}
+	</div>
+</nav>

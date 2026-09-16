@@ -3,79 +3,14 @@
 namespace MediaWiki\Extension\AdvancedCategories;
 
 use MediaWiki\Collation\Collation;
-use MediaWiki\Context\IContextSource;
-use MediaWiki\Html\Html;
 use MediaWiki\Language\ILanguageConverter;
 
 class AzIndex {
 
-	public const APP_MODULE = 'ext.advancedCategories.app';
+	public const APP_MODULE = 'ext.advancedCategories';
 	public const STYLE_MODULE = 'ext.advancedCategories.styles';
 	public const HASH_BUCKET = '#';
 	public const OTHER_BUCKET = 'OTHER';
-
-	/**
-	 * @param string[] $present_letters
-	 */
-	public function render( array $present_letters, IContextSource $context ): string {
-		$present = [];
-		foreach ( $present_letters as $letter ) {
-			$letter = $this->normalize_letter( $letter );
-			if ( $letter !== '' ) {
-				$present[$letter] = true;
-			}
-		}
-
-		$alpha_letters = range( 'A', 'Z' );
-		$extra_letters = [];
-		foreach ( array_keys( $present ) as $letter ) {
-			if ( !in_array( $letter, $alpha_letters, true ) ) {
-				$extra_letters[] = $letter;
-			}
-		}
-		sort( $extra_letters, SORT_STRING );
-		$index_letters = array_merge( $extra_letters, $alpha_letters );
-
-		$items = [];
-		foreach ( $index_letters as $letter ) {
-			$label = $letter === ' ' ? "\u{00A0}" : $letter;
-			if ( isset( $present[$letter] ) ) {
-				$items[] = Html::element(
-					'a',
-					[
-						'class' => 'advancedcategories-az-index__letter',
-						'href' => '#' . self::letter_id( $letter ),
-					],
-					$label
-				);
-			} else {
-				$items[] = Html::element(
-					'span',
-					[ 'class' => 'advancedcategories-az-index__letter advancedcategories-az-index__letter--empty' ],
-					$label
-				);
-			}
-		}
-
-		$heading = Html::element(
-			'span',
-			[ 'class' => 'advancedcategories-az-index__label' ],
-			$context->msg( 'advancedcategories-az-index' )->text()
-		);
-
-		return Html::rawElement(
-			'nav',
-			[
-				'class' => 'advancedcategories-az-index',
-				'aria-label' => $context->msg( 'advancedcategories-az-index-aria' )->text(),
-			],
-			$heading . Html::rawElement(
-				'div',
-				[ 'class' => 'advancedcategories-az-index__letters' ],
-				implode( '', $items )
-			)
-		);
-	}
 
 	public function annotate_groups( string $html ): string {
 		$annotated = preg_replace_callback(
@@ -151,6 +86,53 @@ class AzIndex {
 		}
 
 		return self::OTHER_BUCKET;
+	}
+
+	/**
+	 * @param list<array{letter: string, url: string, page: int, current: bool}> $present_letters
+	 * @return list<array{letter: string, present: bool, id: string, label: string, href: ?string, page: ?int, current: bool}>
+	 */
+	public function index_letters( array $present_letters ): array {
+		$by_bucket = [];
+		foreach ( $present_letters as $item ) {
+			if ( ( $item['url'] ?? '' ) === '' ) {
+				continue;
+			}
+			$bucket = $this->bucket( $item['letter'] );
+			$existing = $by_bucket[$bucket] ?? null;
+			if ( $existing === null || $item['page'] < $existing['page'] ) {
+				$by_bucket[$bucket] = [
+					'href' => $item['url'],
+					'page' => $item['page'],
+					'current' => (bool)$item['current'],
+				];
+				continue;
+			}
+			if ( $item['current'] ) {
+				$by_bucket[$bucket]['current'] = true;
+			}
+		}
+
+		$order = array_merge( [ self::HASH_BUCKET ], range( 'A', 'Z' ) );
+		if ( isset( $by_bucket[ self::OTHER_BUCKET ] ) ) {
+			$order[] = self::OTHER_BUCKET;
+		}
+
+		$items = [];
+		foreach ( $order as $letter ) {
+			$found = $by_bucket[$letter] ?? null;
+			$items[] = [
+				'letter' => $letter,
+				'present' => $found !== null,
+				'id' => self::letter_id( $letter ),
+				'label' => $letter,
+				'href' => $found['href'] ?? null,
+				'page' => $found['page'] ?? null,
+				'current' => $found['current'] ?? false,
+			];
+		}
+
+		return $items;
 	}
 
 	/**
