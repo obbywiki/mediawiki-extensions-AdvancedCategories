@@ -126,4 +126,3 @@ if ( typeof mw !== 'undefined' && mw.hook ) {
 } else {
 	init();
 }
-
